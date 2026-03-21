@@ -1,0 +1,69 @@
+# ===== VARIÁVEIS DE AMBIENTE =====
+.env
+.env.local
+.env.*.local
+
+# ===== NODE MODULES =====
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# ===== DADOS SENSÍVEIS =====
+tournament_data.json
+user_data.json
+*.json
+!package.json
+!package-lock.json
+
+# ===== SISTEMA OPERACIONAL =====
+.DS_Store
+Thumbs.db
+.directory
+
+# ===== EDITORES =====
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.sublime-project
+.sublime-workspace
+
+# ===== LOGS =====
+logs/
+*.log
+
+# ===== BACKUP =====
+*.bak
+*.backup
+*~
+
+# ===== TEMPORÁRIOS =====
+tmp/
+temp/
+.cache/
+
+# ===== CONFIGURAÇÕES LOCAIS =====
+.local/
+.env.production
+.env.development
+
+# ===== BANCOS DE DADOS =====
+*.db
+*.sqlite
+*.sqlite3
+
+# ===== BUILD =====
+dist/
+build/
+out/
+
+# ===== DEPENDÊNCIAS OPCIONAIS =====
+optional/
+
+# ===== IDE ESPECÍFICO =====
+.classpath
+.project
+.c9/
+*.launch
+.settingsfolder

@@ -1,0 +1,33 @@
+{
+  "name": "simulator-tournaments-bot",
+  "version": "2.0.0",
+  "description": "Bot Discord para torneios de simulador com sistema de ranking, moedas e muito mais!",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "discord",
+    "bot",
+    "tournaments",
+    "simulator",
+    "ranking",
+    "moedas",
+    "minigames"
+  ],
+  "author": "Seu Nome",
+  "license": "MIT",
+  "dependencies": {
+    "discord.js": "^13.6.0",
+    "dotenv": "^16.0.3"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.20"
+  },
+  "engines": {
+    "node": ">=16.0.0",
+    "npm": ">=8.0.0"
+  }
+}
