@@ -13,6 +13,13 @@ const serverConfig = new Map();
 const top3Confrontos = new Map();
 
 const MOEDA = '💰';
+const CARGO_ADMIN_TORNEIO = '1345434606811484231';
+
+function isHostOrAdmin(interaction, tournament) {
+    if (interaction.user.id === tournament.host.id) return true;
+    if (interaction.member?.roles?.cache?.has(CARGO_ADMIN_TORNEIO)) return true;
+    return false;
+}
 const defaultConfig = {
     prefix: '/',
     moedaPerVitoria: 100,
@@ -328,7 +335,7 @@ client.on('interactionCreate', async interaction => {
         const tourId = interaction.customId.replace('iniciar_', '');
         const tournament = tournaments.get(tourId);
         if (!tournament) return interaction.reply({ content: '❌ Torneio não encontrado!', ephemeral: true });
-        if (interaction.user.id !== tournament.host.id) return interaction.reply({ content: '❌ Apenas o host pode iniciar!', ephemeral: true });
+        if (!isHostOrAdmin(interaction, tournament)) return interaction.reply({ content: '❌ Apenas o host pode iniciar!', ephemeral: true });
         if (tournament.iniciado) return interaction.reply({ content: '❌ Torneio já iniciado!', ephemeral: true });
         if (tournament.jogadores.length < 2) return interaction.reply({ content: '❌ Precisa de pelo menos 2 jogadores!', ephemeral: true });
 
@@ -362,7 +369,7 @@ client.on('interactionCreate', async interaction => {
         const tournament = tournaments.get(tourId);
 
         if (!tournament) return interaction.reply({ content: '❌ Torneio não encontrado!', ephemeral: true });
-        if (interaction.user.id !== tournament.host.id) return interaction.reply({ content: '❌ Apenas o host pode escolher o vencedor!', ephemeral: true });
+        if (!isHostOrAdmin(interaction, tournament)) return interaction.reply({ content: '❌ Apenas o host pode escolher o vencedor!', ephemeral: true });
 
         const confronto = tournament.confrontos.find(c => c.id === confrontoId);
         if (!confronto) return interaction.reply({ content: '❌ Confronto não encontrado!', ephemeral: true });
@@ -406,7 +413,7 @@ client.on('interactionCreate', async interaction => {
 
         const tournament = tournaments.get(top3Data.tournamentId);
         if (!tournament) return interaction.reply({ content: '❌ Torneio não encontrado!', ephemeral: true });
-        if (interaction.user.id !== tournament.host.id) return interaction.reply({ content: '❌ Apenas o host pode escolher!', ephemeral: true });
+        if (!isHostOrAdmin(interaction, tournament)) return interaction.reply({ content: '❌ Apenas o host pode escolher!', ephemeral: true });
 
         const vencedorId = buttonIndex === 1 ? top3Data.jogador1 : top3Data.jogador2;
         const terceiroProfile = getOrCreateProfile(vencedorId);
