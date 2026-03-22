@@ -806,7 +806,8 @@ client.on('interactionCreate', async interaction => {
             vagas: '8',
             recompensa1: '1000',
             recompensa2: '500',
-            recompensa3: '250'
+            recompensa3: '250',
+            cargoRestrito: null
         });
 
         await interaction.reply({ embeds: [buildPainelEmbed(painelConfig.get(interaction.user.id))], components: buildPainelRows(painelConfig.get(interaction.user.id)), ephemeral: true });
@@ -855,6 +856,30 @@ client.on('interactionCreate', async interaction => {
 
     // Botões de recompensa - abrem modal
     const recompensaBotoes = { painel_recompensa1: '1', painel_recompensa2: '2', painel_recompensa3: '3' };
+
+    // Botão cargo restrito - abre modal
+    if (interaction.customId === 'painel_cargo') {
+        const cfg = painelConfig.get(interaction.user.id);
+        if (!cfg) return interaction.reply({ content: '❌ Abra o painel com /painel primeiro.', ephemeral: true });
+
+        const modal = new Discord.Modal()
+            .setCustomId('modal_cargo_torneio')
+            .setTitle('Cargo Restrito')
+            .addComponents(
+                new Discord.MessageActionRow().addComponents(
+                    new Discord.TextInputComponent()
+                        .setCustomId('input_cargo')
+                        .setLabel('ID do cargo (vazio = todos podem entrar)')
+                        .setStyle('SHORT')
+                        .setPlaceholder('Ex: 1234567890123456789')
+                        .setValue(cfg.cargoRestrito || '')
+                        .setRequired(false)
+                        .setMaxLength(20)
+                )
+            );
+
+        return interaction.showModal(modal);
+    }
 
     // Botão emotes - abre modal com lista
     if (interaction.customId === 'painel_emotes') {
@@ -918,7 +943,7 @@ client.on('interactionCreate', async interaction => {
             vagasTotal: vagas, vagasRestantes: vagas, jogadores: [],
             host: interaction.user, channel: interaction.channel,
             categoryId: null, fase: 1, confrontos: [], iniciado: false,
-            dataInicio: null, top3: [], perdedores: [], cargoRestrito: null, messageId: null,
+            dataInicio: null, top3: [], perdedores: [], cargoRestrito: cfg.cargoRestrito || null, messageId: null,
             recompensas: { primeiro: cfg.recompensa1, segundo: cfg.recompensa2, terceiro: cfg.recompensa3 }
         };
 
@@ -991,6 +1016,15 @@ client.on('interactionCreate', async interaction => {
         cfg.emotes = interaction.fields.getTextInputValue('input_emotes');
         return interaction.reply({ embeds: [buildPainelEmbed(cfg)], components: buildPainelRows(cfg), ephemeral: true });
     }
+
+    if (interaction.customId === 'modal_cargo_torneio') {
+        const cfg = painelConfig.get(interaction.user.id);
+        if (!cfg) return interaction.reply({ content: '❌ Sessão do painel expirou. Use /painel novamente.', ephemeral: true });
+
+        const valor = interaction.fields.getTextInputValue('input_cargo').trim();
+        cfg.cargoRestrito = valor || null;
+        return interaction.reply({ embeds: [buildPainelEmbed(cfg)], components: buildPainelRows(cfg), ephemeral: true });
+    }
 });
 
 function buildPainelEmbed(cfg) {
@@ -1006,7 +1040,8 @@ function buildPainelEmbed(cfg) {
             { name: '👥 Vagas', value: cfg.vagas, inline: true },
             { name: '🥇 1º Lugar', value: cfg.recompensa1 === '0' ? 'Sem recompensa' : `💰 ${cfg.recompensa1}`, inline: true },
             { name: '🥈 2º Lugar', value: cfg.recompensa2 === '0' ? 'Sem recompensa' : `💰 ${cfg.recompensa2}`, inline: true },
-            { name: '🥉 3º Lugar', value: cfg.recompensa3 === '0' ? 'Sem recompensa' : `💰 ${cfg.recompensa3}`, inline: true }
+            { name: '🥉 3º Lugar', value: cfg.recompensa3 === '0' ? 'Sem recompensa' : `💰 ${cfg.recompensa3}`, inline: true },
+            { name: '🎭 Cargo Restrito', value: cfg.cargoRestrito ? `<@&${cfg.cargoRestrito}>` : 'Todos podem entrar', inline: true }
         )
         .setTimestamp();
 }
@@ -1047,6 +1082,7 @@ function buildPainelRows(cfg) {
     );
     const row5 = new Discord.MessageActionRow().addComponents(
         new Discord.MessageButton().setCustomId('painel_confirmar').setLabel('✅ Confirmar e Criar').setStyle('SUCCESS'),
+        new Discord.MessageButton().setCustomId('painel_cargo').setLabel(`🎭 Cargo: ${cfg.cargoRestrito ? cfg.cargoRestrito : 'Todos'}`).setStyle('SECONDARY'),
         new Discord.MessageButton().setCustomId('painel_cancelar').setLabel('❌ Cancelar').setStyle('DANGER')
     );
     return [row1, row2, row3, row4, row5];
