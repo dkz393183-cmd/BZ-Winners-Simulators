@@ -126,11 +126,9 @@ client.on('ready', async () => {
         }
     } catch (e) {}
 
-    // Registrar slash commands
+    // Registrar slash commands globalmente
     try {
-        const guild = client.guilds.cache.get(config.GUILD_ID);
-        if (guild) {
-            await guild.commands.set([
+        await client.application.commands.set([
                 {
                     name: 'torneio',
                     description: 'Criar um novo torneio',
@@ -185,9 +183,8 @@ client.on('ready', async () => {
                 { name: 'ping', description: 'Ver ping do bot' },
                 { name: 'info', description: 'Informacoes do bot' },
                 { name: 'painel', description: 'Painel para configurar o proximo torneio' }
-            ]);
-            console.log('✅ Comandos slash registrados!');
-        }
+        ]);
+        console.log('✅ Comandos slash registrados globalmente!');
     } catch (e) {
         console.error('❌ Erro ao registrar comandos:', e);
     }
